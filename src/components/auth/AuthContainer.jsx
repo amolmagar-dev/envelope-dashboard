@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import SignUp from './SignUp';
 import SignIn from './SignIn';
+import { authModeAtom, darkModeAtom } from '../../state';
+import { useAtom } from 'jotai';
 
 const AuthContainer = () => {
-    const [darkMode, setDarkMode] = useState(true);
-    const [authMode, setAuthMode] = useState('signin');
-    
+    const [authMode, setAuthMode] = useAtom(authModeAtom);
+    const [darkMode, setDarkMode] = useAtom(darkModeAtom);
+
     const handleSignIn = (credentials) => {
         // Implement sign-in logic
         console.log('Sign In', credentials);
@@ -30,21 +32,30 @@ const AuthContainer = () => {
 
     return (
         <>
-            {authMode === 'signin' ? (
-                <SignIn
-                    onSignIn={handleSignIn}
-                    darkMode={darkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    switchToSignUp={switchToSignUp}
-                />
-            ) : (
-                <SignUp
-                    onSignUp={handleSignUp}
-                    darkMode={darkMode}
-                    toggleDarkMode={toggleDarkMode}
-                    switchToSignIn={switchToSignIn}
-                />
-            )}
+            {(() => {
+                switch (authMode) {
+                    case 'signin':
+                        return (
+                            <SignIn
+                                onSignIn={handleSignIn}
+                                darkMode={darkMode}
+                                toggleDarkMode={toggleDarkMode}
+                                switchToSignUp={switchToSignUp}
+                            />
+                        );
+                    case 'signup':
+                        return (
+                            <SignUp
+                                onSignUp={handleSignUp}
+                                darkMode={darkMode}
+                                toggleDarkMode={toggleDarkMode}
+                                switchToSignIn={switchToSignIn}
+                            />
+                        );
+                    default:
+                        return null;
+                }
+            })()}
         </>
     );
 };
