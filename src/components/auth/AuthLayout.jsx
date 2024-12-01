@@ -10,14 +10,14 @@ const AuthLayout = ({ children, darkMode, toggleDarkMode }) => {
       `}
         >
             <div
-                className={`
+        className={`
           w-full max-w-md p-8 rounded-xl shadow-2xl
           ${darkMode ? 'bg-gray-800 text-white' : 'bg-white'}
           relative
         `}
             >
                 <div className="absolute top-4 right-4">
-                    <button
+                    {/* <button
                         onClick={toggleDarkMode}
                         className={`
               p-2 rounded-full
@@ -27,7 +27,7 @@ const AuthLayout = ({ children, darkMode, toggleDarkMode }) => {
             `}
                     >
                         {darkMode ? '☀️' : '🌙'}
-                    </button>
+                    </button> */}
                 </div>
                 {children}
             </div>

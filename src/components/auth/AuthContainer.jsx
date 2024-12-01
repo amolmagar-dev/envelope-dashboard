@@ -8,7 +8,18 @@ const AuthContainer = () => {
     const [authMode, setAuthMode] = useAtom(authModeAtom);
     const [darkMode, setDarkMode] = useAtom(darkModeAtom);
 
+    let users = {
+        Email: "a.magar@gmailcom",
+        Password: "serkjwkejhrkh"
+    }
+
     const handleSignIn = (credentials) => {
+        let { Email } = credentials
+
+        if (Email !== users.Email) {
+            //  it means new user 
+            setAuthMode('signup')
+        }
         // Implement sign-in logic
         console.log('Sign In', credentials);
     };
