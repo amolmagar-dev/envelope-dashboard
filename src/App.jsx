@@ -5,7 +5,7 @@ import AppRoutes from './router';
 import AuthContainer from './components/auth/AuthContainer';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   const handleLogin = () => {
     setIsAuthenticated(true);
@@ -25,7 +25,7 @@ function App() {
           // Show Sidebar and main routes when logged in
           <div className="flex h-full">
             <Sidebar onLogout={handleLogout} />
-            <main className="flex-1 p-4 bg-gray-100">
+            <main>
               <AppRoutes />
             </main>
           </div>
