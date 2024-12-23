@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
+    "dompurify": "^3.2.3",
     "jotai": "^2.10.3",
     "jotai-devtools": "^0.10.1",
     "lucide-react": "^0.462.0",

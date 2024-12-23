@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Mail, Star, Archive, Trash, Folder } from 'lucide-react';
+import DOMPurify from 'dompurify';
+
 
 const Home = () => {
     const [selectedFolder, setSelectedFolder] = useState(null);
@@ -142,7 +144,7 @@ const Home = () => {
                         </div>
                         <div className="p-4 flex-1 overflow-auto h-full">
                             <div
-                                dangerouslySetInnerHTML={{ __html: selectedEmail.htmlBody }}
+                                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedEmail.htmlBody) }}
                                 className="prose max-w-none"
                                 style={{width:'60vw'}}
                             />
