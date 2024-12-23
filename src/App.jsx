@@ -24,7 +24,7 @@ function App() {
         ) : (
           // Show Sidebar and main routes when logged in
           <div className="flex h-full">
-            <Sidebar onLogout={handleLogout} />
+            {/* <Sidebar onLogout={handleLogout} /> */}
             <main>
               <AppRoutes />
             </main>
