@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
-import { Mail, Star, Archive, Trash, Folder, Search, Reply, ReplyAll, Forward } from 'lucide-react';
+import { Mail, Star, Archive, Trash, Folder, Search, Reply, ReplyAll, Forward, Inbox, FileEdit, SendHorizontal, AlertOctagon } from 'lucide-react';
+import ComposeModal from './Compose';
 
 const ResizableDivider = ({ onResize }) => {
     const dividerRef = useRef(null);
@@ -62,12 +63,35 @@ const Home = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [sidebarWidth, setSidebarWidth] = useState(256);
     const [mailListWidth, setMailListWidth] = useState(384);
+    const [isComposeOpen, setIsComposeOpen] = useState(false);
+
+
+    // Default folders configuration
+    const defaultFolders = [
+        { id: 'inbox', name: 'Inbox', icon: Inbox, count: 12 },
+        { id: 'drafts', name: 'Drafts', icon: FileEdit, count: 2 },
+        { id: 'sent', name: 'Sent Items', icon: SendHorizontal, count: 45 },
+        { id: 'deleted', name: 'Deleted Items', icon: Trash, count: 8 },
+        { id: 'junk', name: 'Junk Email', icon: AlertOctagon, count: 3 },
+        { id: 'archive', name: 'Archive', icon: Archive, count: 124 }
+    ];
 
     // Get unique folders and count emails in each folder
     const folderStats = dummyEmails.reduce((acc, email) => {
         acc[email.folder] = (acc[email.folder] || 0) + 1;
         return acc;
     }, {});
+
+
+    // Custom folders from the email data
+    const customFolders = Object.entries(folderStats)
+        .filter(([folder]) => !defaultFolders.some(def => def.id === folder.toLowerCase()))
+        .map(([folder, count]) => ({
+            id: folder.toLowerCase(),
+            name: folder,
+            icon: Folder,
+            count: count
+        }));
 
     useEffect(() => {
         if (!selectedFolder && Object.keys(folderStats).length > 0) {
@@ -102,7 +126,7 @@ const Home = () => {
     };
 
     const filteredEmails = dummyEmails.filter(email =>
-        selectedFolder ? email.folder === selectedFolder : true
+        selectedFolder ? email.folder.toLowerCase() === selectedFolder.toLowerCase() : true
     );
 
     const formatDate = (dateString) => {
@@ -135,6 +159,7 @@ const Home = () => {
     };
 
     return (
+        <>
         <div className="flex h-screen bg-white">
             {/* Sidebar */}
             <div
@@ -153,24 +178,73 @@ const Home = () => {
                         />
                     </div>
                 </div>
-                <div className="space-y-1">
-                    {Object.entries(folderStats).map(([folder, count]) => (
-                        <div
-                            key={folder}
-                            onClick={() => setSelectedFolder(folder)}
-                            className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors
-                                ${selectedFolder === folder ? 'bg-blue-100 text-blue-900' : 'hover:bg-gray-100'}`}
-                        >
-                            <div className="flex items-center">
-                                <Folder className="w-4 h-4 mr-2 text-gray-500" />
-                                <span className="text-sm font-medium">{folder}</span>
-                            </div>
-                            <span className="text-xs font-medium text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full">
-                                {count}
-                            </span>
-                        </div>
-                    ))}
+
+                {/* Compose Button */}
+                    <button onClick={() => setIsComposeOpen(true) }className="w-full mb-6 flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    <Mail className="w-4 h-4 mr-2" />
+                    <span>Compose</span>
+                </button>
+                {/* Favorite Folders Section */}
+                <div className="mb-6">
+                    <h2 className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Favorites
+                    </h2>
+                    <div className="space-y-1">
+                        {defaultFolders.map((folder) => {
+                            const FolderIcon = folder.icon;
+                            return (
+                                <div
+                                    key={folder.id}
+                                    onClick={() => setSelectedFolder(folder.id)}
+                                    className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors
+                                        ${selectedFolder === folder.id ? 'bg-blue-100 text-blue-900' : 'hover:bg-gray-100'}`}
+                                >
+                                    <div className="flex items-center">
+                                        <FolderIcon className="w-4 h-4 mr-2 text-gray-500" />
+                                        <span className="text-sm font-medium">{folder.name}</span>
+                                    </div>
+                                    {folder.count > 0 && (
+                                        <span className="text-xs font-medium text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full">
+                                            {folder.count}
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
+
+                {/* Other Folders Section */}
+                {customFolders.length > 0 && (
+                    <div>
+                        <h2 className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Other Folders
+                        </h2>
+                        <div className="space-y-1">
+                            {customFolders.map((folder) => {
+                                const FolderIcon = folder.icon;
+                                return (
+                                    <div
+                                        key={folder.id}
+                                        onClick={() => setSelectedFolder(folder.id)}
+                                        className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors
+                                            ${selectedFolder === folder.id ? 'bg-blue-100 text-blue-900' : 'hover:bg-gray-100'}`}
+                                    >
+                                        <div className="flex items-center">
+                                            <FolderIcon className="w-4 h-4 mr-2 text-gray-500" />
+                                            <span className="text-sm font-medium">{folder.name}</span>
+                                        </div>
+                                        {folder.count > 0 && (
+                                            <span className="text-xs font-medium text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full">
+                                                {folder.count}
+                                            </span>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* First Resizable Divider */}
@@ -300,6 +374,11 @@ const Home = () => {
                 )}
             </div>
         </div>
+            <ComposeModal
+                isOpen={isComposeOpen}
+                onClose={() => setIsComposeOpen(false)}
+            />
+        </>
     );
 };
 
