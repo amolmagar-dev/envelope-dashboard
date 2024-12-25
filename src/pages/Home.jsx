@@ -3,6 +3,7 @@ import axios from 'axios';
 import DOMPurify from 'dompurify';
 import { Mail, Star, Archive, Trash, Folder, Search, Reply, ReplyAll, Forward, Inbox, FileEdit, SendHorizontal, AlertOctagon } from 'lucide-react';
 import ComposeModal from './Compose';
+import EmailList from './EmailList';
 
 const ResizableDivider = ({ onResize }) => {
     const dividerRef = useRef(null);
@@ -251,35 +252,14 @@ const Home = () => {
             <ResizableDivider onResize={handleSidebarResize} />
 
             {/* Email List */}
-            <div
-                style={{ width: `${mailListWidth}px` }}
-                className="flex-none border-r border-gray-200 overflow-y-auto"
-            >
-                <div className="divide-y divide-gray-100 m-2">
-                    {filteredEmails.map((email) => (
-                        <div
-                            key={email._id}
-                            onClick={() => setSelectedEmail(email)}
-                            className={`group px-4 py-3 cursor-pointer transition-colors
-                                ${selectedEmail?._id === email._id ? 'bg-blue-50' : 'hover:bg-gray-50'}
-                                ${!email.isRead ? 'bg-white' : 'bg-gray-50'}`}
-                        >
-                            <div className="flex items-start justify-between mb-1">
-                                <span className={`text-sm ${!email.isRead ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
-                                    {email.from[0].address.split('@')[0]}
-                                </span>
-                                <span className="text-xs text-gray-500">{formatDate(email.createdAt)}</span>
-                            </div>
-                            <h3 className={`text-sm mb-1 ${!email.isRead ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
-                                {email.subject}
-                            </h3>
-                            <p className="text-sm text-gray-500 line-clamp-2">
-                                {email.textBody || "No preview available"}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            </div>
+                <EmailList
+                    mailListWidth={mailListWidth}
+                    filteredEmails={filteredEmails}
+                    selectedEmail={selectedEmail}
+                    setSelectedEmail={setSelectedEmail}
+                    selectedFolder={selectedFolder}
+                    formatDate={formatDate}
+                />
 
             {/* Second Resizable Divider */}
             <ResizableDivider onResize={handleMailListResize} />
