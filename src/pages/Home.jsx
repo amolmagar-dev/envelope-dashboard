@@ -255,7 +255,7 @@ const Home = () => {
                 style={{ width: `${mailListWidth}px` }}
                 className="flex-none border-r border-gray-200 overflow-y-auto"
             >
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-gray-100 m-2">
                     {filteredEmails.map((email) => (
                         <div
                             key={email._id}
@@ -289,7 +289,7 @@ const Home = () => {
                 {selectedEmail ? (
                     <>
                         {/* Sticky Header Section */}
-                        <div className="sticky top-0 bg-white">
+                        <div className="sticky top-0 bg-white z-10">
                             {/* Toolbar */}
                             <div className="h-12 bg-gray-50 border-b border-gray-200 flex items-center px-4 justify-between">
                                 <div className="flex space-x-2">
