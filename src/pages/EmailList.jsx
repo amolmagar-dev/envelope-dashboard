@@ -6,8 +6,7 @@ const EmailList = ({
     filteredEmails,
     selectedEmail,
     setSelectedEmail,
-    selectedFolder,
-    formatDate
+    selectedFolder
 }) => {
     const unreadCount = filteredEmails.filter(email => !email.isRead).length;
     const totalCount = filteredEmails.length;
@@ -53,7 +52,7 @@ const EmailList = ({
                             <span className={`text-sm ${!email.isRead ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
                                 {email.from[0].address.split('@')[0]}
                             </span>
-                            <span className="text-xs text-gray-500">{formatDate(email.createdAt)}</span>
+                            <span className="text-xs text-gray-500">{email.createdAt}</span>
                         </div>
                         <h3 className={`text-sm mb-1 ${!email.isRead ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
                             {email.subject}
