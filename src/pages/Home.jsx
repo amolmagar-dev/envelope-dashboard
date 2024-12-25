@@ -289,7 +289,7 @@ const Home = () => {
                 {selectedEmail ? (
                     <>
                         {/* Sticky Header Section */}
-                        <div className="sticky top-0 bg-white z-10">
+                        <div className="sticky top-0 bg-white">
                             {/* Toolbar */}
                             <div className="h-12 bg-gray-50 border-b border-gray-200 flex items-center px-4 justify-between">
                                 <div className="flex space-x-2">
