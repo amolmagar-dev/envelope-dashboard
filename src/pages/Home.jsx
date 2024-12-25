@@ -1,13 +1,67 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import DOMPurify from 'dompurify';
 import { Mail, Star, Archive, Trash, Folder, Search, Reply, ReplyAll, Forward } from 'lucide-react';
+
+const ResizableDivider = ({ onResize }) => {
+    const dividerRef = useRef(null);
+    const isDraggingRef = useRef(false);
+    const startXRef = useRef(0);
+
+    useEffect(() => {
+        const handleMouseDown = (e) => {
+            isDraggingRef.current = true;
+            startXRef.current = e.clientX;
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        };
+
+        const handleMouseMove = (e) => {
+            if (isDraggingRef.current) {
+                const dx = e.clientX - startXRef.current;
+                onResize(dx);
+                startXRef.current = e.clientX;
+            }
+        };
+
+        const handleMouseUp = () => {
+            isDraggingRef.current = false;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        };
+
+        const divider = dividerRef.current;
+        divider.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+
+        return () => {
+            divider.removeEventListener('mousedown', handleMouseDown);
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [onResize]);
+
+    return (
+        <div
+            ref={dividerRef}
+            className="w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors flex items-center justify-center group"
+        >
+            <div className="h-8 w-full group-hover:bg-blue-400 flex items-center justify-center">
+                <div className="w-0.5 h-4 bg-gray-400 group-hover:bg-white mx-0.5"></div>
+                <div className="w-0.5 h-4 bg-gray-400 group-hover:bg-white mx-0.5"></div>
+            </div>
+        </div>
+    );
+};
 
 const Home = () => {
     const [selectedFolder, setSelectedFolder] = useState(null);
     const [selectedEmail, setSelectedEmail] = useState(null);
     const [dummyEmails, setDummyEmails] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [sidebarWidth, setSidebarWidth] = useState(256);
+    const [mailListWidth, setMailListWidth] = useState(384);
 
     // Get unique folders and count emails in each folder
     const folderStats = dummyEmails.reduce((acc, email) => {
@@ -33,6 +87,20 @@ const Home = () => {
         fetchEmails();
     }, []);
 
+    const handleSidebarResize = (dx) => {
+        setSidebarWidth((prev) => {
+            const newWidth = Math.max(200, Math.min(400, prev + dx));
+            return newWidth;
+        });
+    };
+
+    const handleMailListResize = (dx) => {
+        setMailListWidth((prev) => {
+            const newWidth = Math.max(250, Math.min(500, prev + dx));
+            return newWidth;
+        });
+    };
+
     const filteredEmails = dummyEmails.filter(email =>
         selectedFolder ? email.folder === selectedFolder : true
     );
@@ -52,7 +120,6 @@ const Home = () => {
         }
     };
 
-
     const getInitials = (email) => {
         const name = email.split('@')[0];
         return name.slice(0, 2).toUpperCase();
@@ -67,11 +134,13 @@ const Home = () => {
         return colors[index % colors.length];
     };
 
-
     return (
         <div className="flex h-screen bg-white">
             {/* Sidebar */}
-            <div className="w-64 bg-gray-50 p-4 border-r border-gray-200">
+            <div
+                style={{ width: `${sidebarWidth}px` }}
+                className="flex-none bg-gray-50 p-4 border-r border-gray-200 overflow-y-auto"
+            >
                 <div className="mb-6">
                     <div className="relative">
                         <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
@@ -104,8 +173,14 @@ const Home = () => {
                 </div>
             </div>
 
+            {/* First Resizable Divider */}
+            <ResizableDivider onResize={handleSidebarResize} />
+
             {/* Email List */}
-            <div className="w-96 border-r border-gray-200 overflow-y-auto">
+            <div
+                style={{ width: `${mailListWidth}px` }}
+                className="flex-none border-r border-gray-200 overflow-y-auto"
+            >
                 <div className="divide-y divide-gray-100">
                     {filteredEmails.map((email) => (
                         <div
@@ -132,9 +207,11 @@ const Home = () => {
                 </div>
             </div>
 
+            {/* Second Resizable Divider */}
+            <ResizableDivider onResize={handleMailListResize} />
+
             {/* Email Detail Preview */}
-            {/* Email Detail Preview */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col min-w-[400px]">
                 {selectedEmail ? (
                     <>
                         {/* Sticky Header Section */}

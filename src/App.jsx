@@ -23,7 +23,7 @@ function App() {
           <AuthContainer onLogin={handleLogin} />
         ) : (
           // Show Sidebar and main routes when logged in
-          <div className="flex h-full">
+          <div>
             {/* <Sidebar onLogout={handleLogout} /> */}
             <main>
               <AppRoutes />
